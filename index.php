@@ -2,10 +2,10 @@
 
 include('PachubeAPI.php');
 
-$pachube = new PachubeAPI("VlhDynZHGRegBUC_nUI8HZHGC2_T1oN2ape0SutxiXU");
-$feed = 25842;
-$feed_to_delete = -1;
-$user = "mungell";
+$pachube = new PachubeAPI("YOUR_API_KEY");
+$feed = FEED_ID;
+$feed_to_delete = FEED_ID_TO_DELETE;
+$user = "USER_NAME";
 
 echo "<h2>getFeedsList(): </h2><br/>";
 echo "<code>" . $pachube->getFeedsList("json", 2, 1, "summary", "energy") . "</code><br/>";
