@@ -53,11 +53,11 @@ class PachubeAPI
 		if($units) $url .= "units=" . $units . "&";
 		if($status) $url .= "status=" . $status . "&";
 		if($order) $url .= "order=" . $order . "&";
-		if($coordinates) 
+		if($location) 
 		{
-			$url .= "lat=" . $coordinates['lat'] . "&" . "lon=" . $coordinates['lon'] . "&";
-			if(isset($coordinates['distance'])) $url .= "distance=" . $coordinates['distance'] . "&";
-			if(isset($coordinates['distance_units'])) $url .= "distance_units=" . $coordinates['distance_units'];
+			$url .= "lat=" . $location['lat'] . "&" . "lon=" . $location['lon'] . "&";
+			if(isset($location['distance'])) $url .= "distance=" . $location['distance'] . "&";
+			if(isset($location['distance_units'])) $url .= "distance_units=" . $location['distance_units'];
 		}
 		return $this->_getRequest($url);
 	}
@@ -65,6 +65,7 @@ class PachubeAPI
 	/**
 	 * Get feed information
 	 * @param string format of output ("json", "xml", "csv")
+	 * @param int feed ID
 	 * @param string/array datastreams
 	 * @return string
 	 */
@@ -110,7 +111,18 @@ class PachubeAPI
 		return $this->_deleteRequest($url);
 	}
 	
-	//ToDo getDatastream
+	/**
+	 * Get feed information
+	 * @param int feed ID
+	 * @return array of objects
+	 */
+	public function getDatastreamsList($feed)
+	{
+		$feed .= ".json";
+		$url = "http://$this->Pachube/feeds/$feed";
+		$data = json_decode($this->_getRequest($url));
+		return $data->datastreams;
+	}
 	
 	/**
 	 * Create datastream
@@ -124,6 +136,130 @@ class PachubeAPI
 		$url = "http://$this->Pachube/feeds/$feed/datastreams";
 		if($format && ($format == "json" || $format == "csv" || $format == "xml")) $url .= ".". $format;
 		return $this->_postRequest($url, $data);
+	}
+	
+	/**
+	 * Get datastream
+	 * @param string format of output ("json", "xml", "csv")
+	 * @param int feed ID
+	 * @param string datastream ID
+	 * @return string
+	 */
+	public function getDatastream($format=false, $feed, $datastream)
+	{
+		if($format && ($format == "json" || $format == "csv" || $format == "xml")) $datastream .= ".". $format;
+		$url = "http://$this->Pachube/feeds/$feed/datastreams/$datastream";
+		return $this->_getRequest($url);
+	}
+	
+	/**
+	 * Update datastream
+	 * @param string format of output ("json", "xml", "csv")
+	 * @param int feed ID
+	 * @param string datastream ID
+     * @param string data
+	 * @return http response headers
+	 */
+	public function updateDatastream($format=false, $feed, $datastream, $data)
+	{
+		if($format && ($format == "json" || $format == "csv" || $format == "xml")) $datastream .= ".". $format;
+		$url = "http://$this->Pachube/feeds/$feed/datastreams/$datastream";
+		return $this->_putRequest($url, $data);
+	}
+	
+	/**
+	 * Delete datastream
+	 * @param int feed ID
+	 * @param string datastream ID
+	 * @return http response headers
+	 */
+	public function deleteDatastream($feed, $datastream)
+	{
+		$url = "http://$this->Pachube/feeds/$feed/datastreams/$datastream";
+		return $this->_deleteRequest($url);
+	}
+	
+	// ToDo: DataPoints
+	// ToDo: Triggers
+	// ToDo: Users: List, Create, Update, Delete
+	// ToDo: API keys
+	
+	/**
+	 * Get user information
+	 * @param string format of output ("json", "xml")
+	 * @param string user login
+	 * @return string
+	 */
+	public function getUser($format=false, $user)
+	{
+		if($format && ($format == "json" || $format == "xml")) $user .= ".". $format;
+		$url = "http://$this->Pachube/users/$user";
+		return $this->_getRequest($url);
+	}
+	
+	/**
+	 * Get feed history
+	 * @param string format of output ("json", "xml", "csv")
+	 * @param int feed ID
+	 * @param string start point
+	 * @param string end point
+	 * @param string duration
+	 * @param int page
+	 * @param int per_page
+	 * @param string time
+	 * @param bool find_previous
+	 * @param string interval_type ("discrete", false)
+	 * @param int interval (in seconds: 0, 30, 60, 300, 900, 3600, 10800, 21600, 43200, 86400)
+	 * @return string
+	 */
+	public function getFeedHistory($format, $feed, $start=false, $end=false, $duration=false, $page=false, $per_page=false, $time=false, $find_previous=false, $interval_type=false, $interval=false)
+	{
+		if($format && ($format == "json" || $format == "csv" || $format == "xml")) $feed .= ".". $format;
+		$url = "http://$this->Pachube/feeds/$feed?";
+		if($start) $url .= "start=" . $start . "&";
+		if($end) $url .= "content=" . $content . "&";
+		if($duration) $url .= "duration=" . $duration . "&";
+		if($page) $url .= "page=" . $page . "&";
+		if($per_page) $url .= "end=" . $end . "&";
+		if($time) $url .= "time=" . $time . "&";
+		if($find_previous) $url .= "find_previous=" . $find_previous . "&";
+		if($interval_type) $url .= "interval_type=" . $interval_type . "&";
+		if($interval) $url .= "interval=" . $interval;
+		
+		return $this->_getRequest($url);
+	}
+	
+	/**
+	 * Get datastream history
+	 * @param string format of output ("json", "xml", "csv")
+	 * @param int feed ID
+	 * @param string datastream ID
+	 * @param string start point
+	 * @param string end point
+	 * @param string duration
+	 * @param int page
+	 * @param int per_page
+	 * @param string time
+	 * @param bool find_previous
+	 * @param string interval_type ("discrete", false)
+	 * @param int interval (in seconds: 0, 30, 60, 300, 900, 3600, 10800, 21600, 43200, 86400)
+	 * @return string
+	 */
+	public function getDatastreamHistory($format, $feed, $datastream, $start=false, $end=false, $duration=false, $page=false, $per_page=false, $time=false, $find_previous=false, $interval_type=false, $interval=false)
+	{
+		if($format && ($format == "json" || $format == "csv" || $format == "xml")) $datastream .= ".". $format;
+		$url = "http://$this->Pachube/feeds/$feed/datastreams/$datastream?";
+		if($start) $url .= "start=" . $start . "&";
+		if($end) $url .= "content=" . $content . "&";
+		if($duration) $url .= "duration=" . $duration . "&";
+		if($page) $url .= "page=" . $page . "&";
+		if($per_page) $url .= "end=" . $end . "&";
+		if($time) $url .= "time=" . $time . "&";
+		if($find_previous) $url .= "find_previous=" . $find_previous . "&";
+		if($interval_type) $url .= "interval_type=" . $interval_type . "&";
+		if($interval) $url .= "interval=" . $interval;
+		
+		return $this->_getRequest($url);
 	}
 	
 	/**
@@ -307,6 +443,42 @@ class PachubeAPI
 		{
 			return false;
 		}
+	}
+	
+	/**
+	 * Print debug status of error
+	 * @param int status code
+	 */
+	public function _debugStatus($status_code)
+	{
+		switch ($status_code)
+		{			
+			case 200:
+				$msg = "Pachube feed successfully updated";	
+				break;
+			case 401:
+				$msg = "Pachube API key was incorrect";
+				break;
+			case 403:
+				$msg = "Access forbidden!";
+				break;
+			case 404:
+				$msg = "Feed ID or some other parameter does not exist";
+				break;
+			case 422:
+				$msg = "Unprocessable Entity, semantic errors (CSV instead of XML?)";
+				break;
+			case 418:
+				$msg = "Error in feed ID, data type or some other data";
+				break;
+			case 500:
+				$msg = "cURL library not installed or some other internal error occured";
+				break;	
+			default:
+				$msg = "Status code not recognised: ".$status_code;
+				break;
+		}
+		echo $msg;		
 	}
 }
 ?>
