@@ -1,6 +1,3 @@
-# PachubeAPI (PHP)
+# Xively (Pachube) API (PHP)
 
-This is a PHP library to interact with Pachube API. 
-
-[Source](http://codeblog.ru)
-
+This is a PHP library to interact with Xively API. 
