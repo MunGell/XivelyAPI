@@ -21,8 +21,8 @@ class PachubeAPI
 	function __construct($api) 
 	{
 		$this->Api = $api;
-		$this->Pachube = "api.pachube.com/v2";
-		$this->Pachube_headers  = array("X-PachubeApiKey: $this->Api");
+		$this->Pachube = "api.xively.com/v2";
+		$this->Pachube_headers  = array("X-ApiKey: $this->Api");
 	}
 	
 	/**
